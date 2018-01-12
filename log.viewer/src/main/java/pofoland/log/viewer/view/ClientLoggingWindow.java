@@ -81,6 +81,7 @@ public class ClientLoggingWindow {
 		windowFrame.setVisible(true);
 		windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		
 		//GUI인스턴스 추가
 		guiInstanceMap.put("logArea", logArea);
 		guiInstanceMap.put("startBtn", startBtn);

@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import pofoland.log.viewer.utils.ByteUtils;
+import pofoland.log.viewer.utils.LoggerManager;
 
 public class LogViewerClientDecoder extends ByteToMessageDecoder {
 	
@@ -66,14 +67,15 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				} 
 			}
 			String msg = reciveMsg.split("[$]")[1];
-			
+
 			if (msg.trim().length() > 0) {
 				out.add(reciveMsg.trim());
 			} else {
 				out.add(reciveMsg);
 			}
 		} catch (Exception e) {
-			System.out.println("LogViewerClientDecoder : " + e.getMessage());
+			e.printStackTrace();
+			LoggerManager.debug(getClass(), "LogViewerClientDecoder : " + e.getMessage());
 		} finally {
 		}
 	}

@@ -16,4 +16,17 @@ public class KeyCodeRuleConstant {
 	public static final String LOG_START = "start";
 	public static final String LOG_STOP = "stop";
 	public static final String IPCONFIG = "ipconfig";
+	public static final String LOG_LINE_SIZE = "linesize";
+	public static final String LINE_SIZE_CHANGE = "linesize -change";
+	public static final String LINE_SIZE_DEFAULT = "linesize -default";
+	
+	
+	
+	//LOG LEVEL
+//	public static final String LOG_LEVEL_ERROR = "ERROR";
+//	public static final String LOG_LEVEL_DEBUG = "DEBUG";
+//	public static final String LOG_LEVEL_INFO = "INFO";
+//	public static final String LOG_LEVEL_WARN = "WARN";
+//	public static final String LOG_LEVEL_ALL = "ALL";
+	
 }

@@ -1,5 +1,7 @@
 package pofoland.log.viewer.queue;
 
+import pofoland.log.viewer.utils.LoggerManager;
+
 public class CircularQueue {
 	
 	private int arraySize = 10;
@@ -21,7 +23,7 @@ public class CircularQueue {
 
 	public void enqueue(Object data) {
 		if ((rear + 1) % arraySize == front % arraySize) {
-			System.out.println("Full");
+			LoggerManager.info(getClass(), "FULL QUEUE SIZE");
 			dequeue();
 			enqueue(data);
 		} else {
@@ -33,18 +35,11 @@ public class CircularQueue {
 
 	public void dequeue() {
 		if (front == rear) {
-			System.out.println("Empty!!");
+			LoggerManager.info(getClass(), "EMPTY QUEUE SIZE");
 		} else {
 			front = (front + 1) % arraySize;
 			arr[front] = null;
 		}
-	}
-
-	public void showArray() {
-		for (int i = 0; i < arraySize; i++) {
-			System.out.print(arr[i] + " ");
-		}
-		System.out.println();
 	}
 
 	public Object getFrontItem() {

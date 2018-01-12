@@ -11,17 +11,23 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import pofoland.log.viewer.convertion.LogViewerClientDecoder;
 import pofoland.log.viewer.convertion.LogViewerClientEncoder;
+import pofoland.log.viewer.utils.ConfigManager;
+import pofoland.log.viewer.utils.LoggerManager;
 
 public class LogViewerTcpClient {
-	
 	
 	public LogViewerTcpClient() {
 		
 	}
 	
 	public static void main(String[] args) {
-		String inetHost = "localhost";
-		int inetPort = 8088;
+		
+		ConfigManager.setProperties("viewer.network.properties");
+		
+		String inetHost = ConfigManager.getProperty("viewer.server.ip");
+		int inetPort = ConfigManager.getIntProperty("viewer.server.port");
+		
+		LoggerManager.info(LogViewerTcpClient.class,"dwddw {}" , "김영훈");
 		
 		EventLoopGroup group = new NioEventLoopGroup();
 		

@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pofoland.log.viewer.constant.NetworkProtocolConstant;
 import pofoland.log.viewer.utils.JsonUtils;
+import pofoland.log.viewer.utils.LoggerManager;
 import pofoland.log.viewer.view.ClientLoggingWindow;
 
 public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<String>{
@@ -20,7 +21,7 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 	public void channelActive(ChannelHandlerContext ctx) {
 		this.ctx = ctx;
 		clientLoggingWindow = new ClientLoggingWindow();
-		System.out.println("서버접속");
+		LoggerManager.info(getClass(), "Server in success");
 	}
 	
 	@Override
@@ -43,8 +44,13 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		System.out.println(cause.getCause()+"::"+cause.getMessage());
+		LoggerManager.info(getClass(), (cause.getCause()+"::"+cause.getMessage()));
 		cause.printStackTrace();
+	}
+	
+	public static void sendMessage(String protocol, Object msg) {
+		JSONObject sendJsonObject = JsonUtils.setJsonValue(protocol, msg);
+		ctx.writeAndFlush(sendJsonObject);
 	}
 	
 	public static void viewerStateChange(String state) {
