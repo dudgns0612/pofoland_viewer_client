@@ -15,6 +15,7 @@ import pofoland.log.viewer.client.LogViewerTcpClientHandler;
 import pofoland.log.viewer.constant.KeyCodeRuleConstant;
 import pofoland.log.viewer.constant.NetworkProtocolConstant;
 import pofoland.log.viewer.queue.CircularQueue;
+import pofoland.log.viewer.utils.LoggerManager;
 
 public class ClientTextFieldEventListener extends KeyAdapter{
 
@@ -95,13 +96,20 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
-		} else if (KeyCodeRuleConstant.LOG_LINE_SIZE.contains(eventText)) {
-			String option = eventText.split(" ")[1];
-			String logLineSize = eventText.split(" ")[2];
-			if (KeyCodeRuleConstant.LINE_SIZE_CHANGE.equals(option)) {
-				LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_CHANGE, Integer.parseInt(logLineSize));
+		} else if (eventText.contains(KeyCodeRuleConstant.LOG_LINE_SIZE)) {
+			if (KeyCodeRuleConstant.LOG_LINE_SIZE.equals(eventText)) {
+				LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE);
 			} else {
-				LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_DEFUALT, Integer.parseInt(logLineSize));
+				try {
+					if (eventText.contains(KeyCodeRuleConstant.LINE_SIZE_CHANGE)) {
+						String logLineSize = eventText.split(" ")[2];
+						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_CHANGE, Integer.parseInt(logLineSize));
+					} else {
+						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_DEFUALT, 170);
+					}
+				} catch(Exception e) {
+					logArea.append(">>존재하지 않는 명령어입니다. \n");
+				}
 			}
 		} else {
 			logArea.append(">>존재하지 않는 명령어입니다. \n");

@@ -36,6 +36,8 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 				clientLoggingWindow.writeLogger(value);
 			} else if (NetworkProtocolConstant.CLINET_SEND_STOP.equals(protocol)) {
 				clientLoggingWindow.writeLogger(value);
+			} else if (NetworkProtocolConstant.CLIENT_LOG_SIZE.equals(protocol)) {
+				clientLoggingWindow.writeLogger(">>LOG LINESIZE - " + value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,6 +48,11 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		LoggerManager.info(getClass(), (cause.getCause()+"::"+cause.getMessage()));
 		cause.printStackTrace();
+	}
+	
+	public static void sendMessage(String protocol) {
+		JSONObject sendJsonObject = JsonUtils.setJsonValue(protocol);
+		ctx.writeAndFlush(sendJsonObject);
 	}
 	
 	public static void sendMessage(String protocol, Object msg) {
