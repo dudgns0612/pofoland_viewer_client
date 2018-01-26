@@ -11,14 +11,15 @@ package pofoland.log.viewer.constant;
  */
 public class KeyCodeRuleConstant {
 	
-	public static final String CLEAR_TXET = "clear";
-	public static final String SHUTDOWN_TEXT = "shutdown";
+	public static final String CLEAR = "clear";
+	public static final String SHUTDOWN = "shutdown";
 	public static final String LOG_START = "start";
 	public static final String LOG_STOP = "stop";
 	public static final String IPCONFIG = "ipconfig";
 	public static final String LOG_LINE_SIZE = "linesize";
 	public static final String LINE_SIZE_CHANGE = "linesize -change";
 	public static final String LINE_SIZE_DEFAULT = "linesize -default";
+	public static final String LOG_OPTION = "option";
 	
 	
 	

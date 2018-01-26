@@ -2,13 +2,11 @@ package pofoland.log.viewer.client;
 
 import java.util.StringTokenizer;
 
-import org.json.simple.JSONObject;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pofoland.log.viewer.constant.NetworkProtocolConstant;
-import pofoland.log.viewer.utils.JsonUtils;
 import pofoland.log.viewer.utils.LoggerManager;
+import pofoland.log.viewer.utils.StringUtils;
 import pofoland.log.viewer.view.ClientLoggingWindow;
 
 public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<String>{
@@ -51,22 +49,18 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 	}
 	
 	public static void sendMessage(String protocol) {
-		JSONObject sendJsonObject = JsonUtils.setJsonValue(protocol);
-		ctx.writeAndFlush(sendJsonObject);
+		ctx.writeAndFlush(StringUtils.makeSendStr(protocol));
 	}
 	
-	public static void sendMessage(String protocol, Object msg) {
-		JSONObject sendJsonObject = JsonUtils.setJsonValue(protocol, msg);
-		ctx.writeAndFlush(sendJsonObject);
+	public static void sendMessage(String protocol, String msg) {
+		ctx.writeAndFlush(StringUtils.makeSendStr(protocol, msg));
 	}
 	
 	public static void viewerStateChange(String state) {
 		if (state.equals("Y")) {
-			JSONObject sendJsonObject = JsonUtils.setJsonValue(NetworkProtocolConstant.CLINET_SEND_START);
-			ctx.writeAndFlush(sendJsonObject);
+			ctx.writeAndFlush(StringUtils.makeSendStr(NetworkProtocolConstant.CLINET_SEND_START));
 		} else {
-			JSONObject sendJsonObject = JsonUtils.setJsonValue(NetworkProtocolConstant.CLINET_SEND_STOP);
-			ctx.writeAndFlush(sendJsonObject);
+			ctx.writeAndFlush(StringUtils.makeSendStr(NetworkProtocolConstant.CLINET_SEND_STOP));
 		}
 	}
 }
