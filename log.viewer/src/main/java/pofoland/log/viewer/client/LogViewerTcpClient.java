@@ -27,8 +27,6 @@ public class LogViewerTcpClient {
 		String inetHost = ConfigManager.getProperty("viewer.server.ip");
 		int inetPort = ConfigManager.getIntProperty("viewer.server.port");
 		
-		LoggerManager.info(LogViewerTcpClient.class,"dwddw {}" , "김영훈");
-		
 		EventLoopGroup group = new NioEventLoopGroup();
 		
 		try {
