@@ -9,7 +9,7 @@ import pofoland.log.viewer.utils.LoggerManager;
 import pofoland.log.viewer.utils.StringUtils;
 import pofoland.log.viewer.view.ClientLoggingWindow;
 
-public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<String>{
+public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Object>{
 	
 	ClientLoggingWindow clientLoggingWindow = null;
 	public static ChannelHandlerContext ctx;
@@ -23,8 +23,8 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 	}
 	
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-		StringTokenizer stringTokenizer = new StringTokenizer(msg, "$");
+	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+		StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(msg), "$");
 		String protocol = stringTokenizer.nextToken();
 		String value = stringTokenizer.nextToken();
 		try {
@@ -36,6 +36,8 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Strin
 				clientLoggingWindow.writeLogger(value);
 			} else if (NetworkProtocolConstant.CLIENT_LOG_SIZE.equals(protocol)) {
 				clientLoggingWindow.writeLogger(">>LOG LINESIZE - " + value);
+			} else if (NetworkProtocolConstant.CLIENT_LOG_DATE.equals(protocol)) {
+				clientLoggingWindow.writeLogger(value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

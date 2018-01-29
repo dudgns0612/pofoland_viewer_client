@@ -20,6 +20,8 @@ public class KeyCodeRuleConstant {
 	public static final String LINE_SIZE_CHANGE = "linesize -change";
 	public static final String LINE_SIZE_DEFAULT = "linesize -default";
 	public static final String LOG_OPTION = "option";
+	public static final String LOG_DATE = "logdate";
+	
 	
 	
 	
