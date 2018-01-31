@@ -15,6 +15,7 @@ import pofoland.log.viewer.client.LogViewerTcpClientHandler;
 import pofoland.log.viewer.constant.KeyCodeRuleConstant;
 import pofoland.log.viewer.constant.NetworkProtocolConstant;
 import pofoland.log.viewer.queue.CircularQueue;
+import pofoland.log.viewer.utils.ConfigManager;
 import pofoland.log.viewer.utils.LoggerManager;
 import pofoland.log.viewer.utils.StringUtils;
 
@@ -27,6 +28,7 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 	private String keyEventText = null;
 	private JButton startBtn = null;
 	private JButton stopBtn = null;
+	private String projectName = ConfigManager.getProperty("project.name");
 	
 	public ClientTextFieldEventListener(ChannelHandlerContext ctx) {
 		this.ctx = ctx;
@@ -107,19 +109,23 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 							String logLineSize = eventText.split(" ")[2];
 							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_CHANGE, logLineSize);
 						} else {
-							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_DEFUALT, "170");
+							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_SIZE_DEFUALT, "165");
 						}
 					} catch(Exception e) {
 						logArea.append(">>존재하지 않는 명령어입니다. \n");
 					}
 				}
 			} else if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE)) {
-				String logDate = eventText.split(" ")[1];
-				LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, logDate);
+				String dateOption = eventText.split(" ")[1];
+				if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, dateOption)) {
+					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
+				} else {
+					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, "\\"+projectName+"."+dateOption+".log");
+					logArea.setText("");
+					logArea.append(">>로그데이터 갱신중.... \n");
+				}
 				
-				logArea.setText("");
-				logArea.append(">>로그데이터 갱신중.... \n");
-			} else if (KeyCodeRuleConstant.LOG_OPTION.equalsIgnoreCase(eventText)){
+			} else if (KeyCodeRuleConstant.LOG_OPTION.equalsIgnoreCase(eventText)) {
 				StringBuffer sb = new StringBuffer();
 				sb.append("......................................LOG OPTION....................................").append("\n");
 				sb.append("\n");

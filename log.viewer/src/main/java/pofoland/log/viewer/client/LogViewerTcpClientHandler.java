@@ -1,6 +1,10 @@
 package pofoland.log.viewer.client;
 
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+import org.json.simple.JSONObject;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -24,22 +28,41 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-		StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(msg), "$");
-		String protocol = stringTokenizer.nextToken();
-		String value = stringTokenizer.nextToken();
+		String objType = msg.getClass().getName();
+		System.out.println(objType);
 		try {
-			if (NetworkProtocolConstant.SERVER_SEND_LOG_MESSAGE.equals(protocol)) {
-				clientLoggingWindow.writeLogger(value);
-			} else if (NetworkProtocolConstant.CLINET_SEND_START.equals(protocol)) {
-				clientLoggingWindow.writeLogger(value);
-			} else if (NetworkProtocolConstant.CLINET_SEND_STOP.equals(protocol)) {
-				clientLoggingWindow.writeLogger(value);
-			} else if (NetworkProtocolConstant.CLIENT_LOG_SIZE.equals(protocol)) {
-				clientLoggingWindow.writeLogger(">>LOG LINESIZE - " + value);
-			} else if (NetworkProtocolConstant.CLIENT_LOG_DATE.equals(protocol)) {
-				clientLoggingWindow.writeLogger(value);
+			if (objType.contains("String")) {
+				StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(msg), "&");
+				String protocol = stringTokenizer.nextToken();
+				String value = stringTokenizer.nextToken();
+				
+				if (NetworkProtocolConstant.SERVER_SEND_LOG_MESSAGE.equals(protocol)) {
+					clientLoggingWindow.writeLogger(value);
+				} else if (NetworkProtocolConstant.CLINET_SEND_START.equals(protocol)) {
+					clientLoggingWindow.writeLogger(value);
+				} else if (NetworkProtocolConstant.CLINET_SEND_STOP.equals(protocol)) {
+					clientLoggingWindow.writeLogger(value);
+				} else if (NetworkProtocolConstant.CLIENT_LOG_SIZE.equals(protocol)) {
+					clientLoggingWindow.writeLogger(">>LOG LINESIZE - " + value);
+				} else if (NetworkProtocolConstant.CLIENT_LOG_DATE.equals(protocol)) {
+					clientLoggingWindow.writeLogger(value);
+				}
+			} else {
+				JSONObject resObject = (JSONObject)msg;
+				String protocol = (String) resObject.get("protocol");
+				if (NetworkProtocolConstant.CLIENT_LOG_DIR.equals(protocol)) {
+					System.out.println(resObject.toJSONString());
+					List<Map<String,String>> resList = (List<Map<String, String>>) resObject.get("value");
+					StringBuffer sb = new StringBuffer();
+					for (int i=0 ; i < resList.size() ; i++) {
+						Map<String, String> resMap = resList.get(i);
+						sb.append(resMap.get("modfiyDate")).append("\t").append(resMap.get("type")).append("\t").append(resMap.get("name"));
+					}
+					clientLoggingWindow.writeLogger(sb.toString());
+				}
 			}
 		} catch (Exception e) {
+			//TODO 오류정리
 			e.printStackTrace();
 		}
 	}

@@ -1,6 +1,10 @@
 package pofoland.log.viewer.convertion;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.util.List;
+
+import org.json.simple.JSONObject;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,6 +38,8 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 			for (int i = 0 ; i < packetAllSize ; i++) {
 				read[i] = in.readByte();
 			}
+			String type = ByteUtils.singleByteToHexString(read[1]);
+			System.out.println("encoding Type : "+type);
 			
 			//중간에 끊길 시 기존 인덱스 저장
 			if (!ByteUtils.byteToHexString(read).contains("0x02") || !ByteUtils.byteToHexString(read).contains("0x03")) {
@@ -41,37 +47,55 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				return;
 			} 
 			
-			String reciveMsg = "";
-			//사이즈 오버 시 남은 인덱스 사이즈 저장
-			int tempDataSize = 0;
 			
-			while (true) {
+			if (type.equals("0x00")) {
+				String reciveMsg = "";
+				//사이즈 오버 시 남은 인덱스 사이즈 저장
+				int tempDataSize = 0;
+				
+				while (true) {
+					byte[] packetDataSize = new byte[4];
+					System.arraycopy(read, tempDataSize+2, packetDataSize, 0, 4);
+					int dataSize = ByteUtils.byteToIntBigEndian(packetDataSize);
+		
+					
+					byte[] packetData = new byte[dataSize];
+					System.arraycopy(read, tempDataSize, packetData, 0, dataSize);
+					
+					byte[] packetMessageData = new byte[packetData.length-6];
+					System.arraycopy(packetData,6, packetMessageData, 0, packetData.length-6);
+					System.arraycopy(packetMessageData, 0, packetMessageData, 0, packetMessageData.length-1);
+					
+					reciveMsg = new String(packetMessageData,"UTF-8");
+					
+					//인덱스 누적
+					tempDataSize += dataSize;
+					if (tempDataSize == packetAllSize) {
+						break;
+					} 
+				}
+				String msg = reciveMsg.split("[&]")[1];
+				
+				if (msg.trim().length() > 0) {
+					out.add(reciveMsg.trim());
+				} else {
+					out.add(reciveMsg);
+				}
+			} else {
 				byte[] packetDataSize = new byte[4];
-				System.arraycopy(read, tempDataSize+2, packetDataSize, 0, 4);
+				System.arraycopy(read, 2, packetDataSize, 0, 4);
 				int dataSize = ByteUtils.byteToIntBigEndian(packetDataSize);
-	
 				
-				byte[] packetData = new byte[dataSize];
-				System.arraycopy(read, tempDataSize, packetData, 0, dataSize);
 				
-				byte[] packetMessageData = new byte[packetData.length-6];
-				System.arraycopy(packetData,6, packetMessageData, 0, packetData.length-6);
+				byte[] packetMessageData = new byte[dataSize];
+				System.arraycopy(read,6, packetMessageData, 0, read.length-6);
 				System.arraycopy(packetMessageData, 0, packetMessageData, 0, packetMessageData.length-1);
 				
-				reciveMsg = new String(packetMessageData,"UTF-8");
+				ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packetMessageData);
+				ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
 				
-				//인덱스 누적
-				tempDataSize += dataSize;
-				if (tempDataSize == packetAllSize) {
-					break;
-				} 
-			}
-			String msg = reciveMsg.split("[$]")[1];
-			
-			if (msg.trim().length() > 0) {
-				out.add(reciveMsg.trim());
-			} else {
-				out.add(reciveMsg);
+				JSONObject returnObject = (JSONObject) objectInputStream.readObject();
+				out.add(returnObject);
 			}
 		} catch (Exception e) {
 			LoggerManager.debug(getClass(), "LogViewerClientDecoder : " + e.getMessage());

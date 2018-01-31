@@ -12,7 +12,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import pofoland.log.viewer.convertion.LogViewerClientDecoder;
 import pofoland.log.viewer.convertion.LogViewerClientEncoder;
 import pofoland.log.viewer.utils.ConfigManager;
-import pofoland.log.viewer.utils.LoggerManager;
 
 public class LogViewerTcpClient {
 	
@@ -22,7 +21,7 @@ public class LogViewerTcpClient {
 	
 	public static void main(String[] args) {
 		
-		ConfigManager.setProperties("viewer.network.properties");
+		ConfigManager.setProperties("viewer.properties");
 		
 		String inetHost = ConfigManager.getProperty("viewer.server.ip");
 		int inetPort = ConfigManager.getIntProperty("viewer.server.port");

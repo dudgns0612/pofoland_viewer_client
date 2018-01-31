@@ -9,13 +9,13 @@ public class ByteUtils {
 	
 	/**
 	 * stx - 시작 세그먼트 1byte 
-	 * note - 비고 1byte 
+	 * note - 비고 1byte => 0x00 String / 0x01 Object
 	 * value size - 패킷 사이즈 4byte
-	 * value - 데이터 가변  =>  protocol$data
+	 * value - 데이터 가변  =>  protocol&data
 	 * etx = 종료 세그먼트 1byte 
 	 * @return
 	 */
-	public static byte[] makeSendPacket(byte[] sendValue) {
+	public static byte[] makeSendPacket(byte[] sendValue, byte type) {
 		int valueLength = sendValue.length;
 		
 		byte[] sendPacket = new byte[valueLength+7];
@@ -24,7 +24,7 @@ public class ByteUtils {
 		sendPacket[0] = 0x02;
 
 		//0 = 0x00 NUL: note
-		sendPacket[1] = 0x00;
+		sendPacket[1] = type;
 		
 		// Big Endian 패킷 size 4byte
 		byte[] valueLengthBytes = intToByteBigEndian(sendPacket.length);

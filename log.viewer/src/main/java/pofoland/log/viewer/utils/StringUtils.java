@@ -18,14 +18,14 @@ public class StringUtils {
 	}
 	
 	public static String makeSendStr (String protocol) {
-		return protocol+"$";
+		return protocol+"&";
 	}
 	
 	public static String makeSendStr (String protocol,String msg) {
-		return protocol+"$"+msg;
+		return protocol+"&"+msg;
 	}
 	
 	public static String makeSendStr (String protocol,Object msg) {
-		return protocol+"$"+msg;
+		return protocol+"&"+msg;
 	}
 }

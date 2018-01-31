@@ -15,4 +15,5 @@ public class NetworkProtocolConstant {
 	public static final String CLIENT_LOG_SIZE_DEFUALT = "CLIENT_LOG_SIZE_DEFUALT";
 	public static final String CLIENT_LOG_SIZE = "CLIENT_LOG_SIZE";
 	public static final String CLIENT_LOG_DATE = "CLINET_LOG_DATE";
+	public static final String CLIENT_LOG_DIR = "CLIENT_LOG_DIR";
 }
