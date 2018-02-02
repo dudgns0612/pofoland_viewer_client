@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -40,9 +38,10 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 			}
 			String type = ByteUtils.singleByteToHexString(read[1]);
 			System.out.println("encoding Type : "+type);
+			System.out.println(packetAllSize);
 			
 			//중간에 끊길 시 기존 인덱스 저장
-			if (!ByteUtils.byteToHexString(read).contains("0x02") || !ByteUtils.byteToHexString(read).contains("0x03")) {
+			if (0x02 != read[0] || 0x03 != read[packetAllSize-1]) {
 				in.resetReaderIndex();
 				return;
 			} 
@@ -82,6 +81,9 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 					out.add(reciveMsg);
 				}
 			} else {
+				System.out.println(ByteUtils.byteToHexString(read));
+				System.out.println(read.length);
+				
 				byte[] packetDataSize = new byte[4];
 				System.arraycopy(read, 2, packetDataSize, 0, 4);
 				int dataSize = ByteUtils.byteToIntBigEndian(packetDataSize);
@@ -94,10 +96,14 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packetMessageData);
 				ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
 				
-				JSONObject returnObject = (JSONObject) objectInputStream.readObject();
+				Object returnObject = objectInputStream.readObject();
 				out.add(returnObject);
+				
+				byteArrayInputStream.close();
+				objectInputStream.close();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			LoggerManager.debug(getClass(), "LogViewerClientDecoder : " + e.getMessage());
 		} finally {
 		}

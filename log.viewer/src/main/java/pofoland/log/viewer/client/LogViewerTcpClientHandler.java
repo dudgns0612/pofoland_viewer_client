@@ -49,15 +49,18 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 				}
 			} else {
 				JSONObject resObject = (JSONObject)msg;
-				String protocol = (String) resObject.get("protocol");
+				String protocol = (String) resObject.get("PROTOCOL");
+				System.out.println(protocol);
 				if (NetworkProtocolConstant.CLIENT_LOG_DIR.equals(protocol)) {
 					System.out.println(resObject.toJSONString());
-					List<Map<String,String>> resList = (List<Map<String, String>>) resObject.get("value");
+					List<Map<String,String>> resList = (List<Map<String, String>>) resObject.get("VALUE");
 					StringBuffer sb = new StringBuffer();
+					sb.append("=============================== LOG DIRECTORY ==============================").append("\n");
 					for (int i=0 ; i < resList.size() ; i++) {
 						Map<String, String> resMap = resList.get(i);
-						sb.append(resMap.get("modfiyDate")).append("\t").append(resMap.get("type")).append("\t").append(resMap.get("name"));
+						sb.append(resMap.get("modfiyDate")).append("\t").append(resMap.get("type")).append("\t").append(resMap.get("name")).append("\n");
 					}
+					sb.append("============================================================================").append("\n");
 					clientLoggingWindow.writeLogger(sb.toString());
 				}
 			}
