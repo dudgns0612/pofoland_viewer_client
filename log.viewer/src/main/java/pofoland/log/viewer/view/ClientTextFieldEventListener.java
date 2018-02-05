@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
@@ -117,12 +119,23 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 				}
 			} else if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE)) {
 				String dateOption = eventText.split(" ")[1];
-				if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, dateOption)) {
-					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
+				Pattern pattern = Pattern.compile("[^0-9]");
+				Matcher matcher = pattern.matcher(dateOption);
+				
+				if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_FILE_DOWN, eventText)) {
+					// TODO
 				} else {
-					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, "\\"+projectName+"."+dateOption+".log");
-					logArea.setText("");
-					logArea.append(">>로그데이터 갱신중.... \n");
+					if (matcher.matches()) {
+						if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, dateOption)) {
+							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
+						} else {
+							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, "\\"+projectName+"."+dateOption+".log");
+							logArea.setText("");
+							logArea.append(">>로그데이터 갱신중.... \n");
+						}
+					} else {
+						logArea.append(">>올바르지 않은 날짜형식입니다. \n");
+					}
 				}
 				
 			} else if (KeyCodeRuleConstant.LOG_OPTION.equalsIgnoreCase(eventText)) {
@@ -136,7 +149,12 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 				sb.append("  LOGLINE -OPTION   . . . : ").append("LOG_LINE_SIZE OPTION").append("\n");
 				sb.append("  -CHANGE 값(숫자) . . . . . . : ").append("로그라인길이 변경").append("\n");
 				sb.append("  -DEFAULT . . . . . . . . . . . .: ").append("로그라인길이 기본사이즈로 변경").append("\n");
-				sb.append("  EX) : ").append("linesize -change").append("\n");
+				sb.append("  EX) : ").append("logline -change").append("\n");
+				sb.append("  LOGDATE OPTION   . . . : ").append("날짜 별 데이터 로깅").append("\n");
+				sb.append("  날짜 값(숫자) . . . . . . : ").append("로그 날짜 설정").append("\n");
+				sb.append("  EX) : ").append("logdate 20180105").append("\n");
+				sb.append("  DIR . . . . . . : ").append("로그날짜별 파일 디렉토리 확인").append("\n");
+				sb.append("  EX) : ").append("logdate dir").append("\n");
 				sb.append("\n");
 				sb.append("..........................................................................................").append("\n");
 				

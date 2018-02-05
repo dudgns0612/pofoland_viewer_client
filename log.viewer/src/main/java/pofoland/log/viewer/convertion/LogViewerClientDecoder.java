@@ -37,8 +37,6 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				read[i] = in.readByte();
 			}
 			String type = ByteUtils.singleByteToHexString(read[1]);
-			System.out.println("encoding Type : "+type);
-			System.out.println(packetAllSize);
 			
 			//중간에 끊길 시 기존 인덱스 저장
 			if (0x02 != read[0] || 0x03 != read[packetAllSize-1]) {
@@ -81,9 +79,6 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 					out.add(reciveMsg);
 				}
 			} else {
-				System.out.println(ByteUtils.byteToHexString(read));
-				System.out.println(read.length);
-				
 				byte[] packetDataSize = new byte[4];
 				System.arraycopy(read, 2, packetDataSize, 0, 4);
 				int dataSize = ByteUtils.byteToIntBigEndian(packetDataSize);

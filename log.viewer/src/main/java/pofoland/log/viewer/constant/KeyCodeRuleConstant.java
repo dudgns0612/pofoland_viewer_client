@@ -22,6 +22,7 @@ public class KeyCodeRuleConstant {
 	public static final String LOG_OPTION = "option";
 	public static final String LOG_DATE = "logdate";
 	public static final String LOG_DATE_DIR = "logdate dir";
+	public static final String LOG_DATE_FILE_DOWN = "logdate -d";
 	
 	
 	//LOG LEVEL

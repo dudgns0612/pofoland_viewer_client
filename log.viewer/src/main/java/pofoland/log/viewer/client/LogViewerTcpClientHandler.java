@@ -29,7 +29,6 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		String objType = msg.getClass().getName();
-		System.out.println(objType);
 		try {
 			if (objType.contains("String")) {
 				StringTokenizer stringTokenizer = new StringTokenizer(String.valueOf(msg), "&");
@@ -50,9 +49,7 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 			} else {
 				JSONObject resObject = (JSONObject)msg;
 				String protocol = (String) resObject.get("PROTOCOL");
-				System.out.println(protocol);
 				if (NetworkProtocolConstant.CLIENT_LOG_DIR.equals(protocol)) {
-					System.out.println(resObject.toJSONString());
 					List<Map<String,String>> resList = (List<Map<String, String>>) resObject.get("VALUE");
 					StringBuffer sb = new StringBuffer();
 					sb.append("=============================== LOG DIRECTORY ==============================").append("\n");
