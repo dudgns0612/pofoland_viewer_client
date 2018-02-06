@@ -1,14 +1,20 @@
 package pofoland.log.viewer.client;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 
 import org.json.simple.JSONObject;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import pofoland.log.viewer.constant.NetworkProtocolConstant;
+import pofoland.log.viewer.utils.FileUtils;
 import pofoland.log.viewer.utils.LoggerManager;
 import pofoland.log.viewer.utils.StringUtils;
 import pofoland.log.viewer.view.ClientLoggingWindow;
@@ -45,6 +51,8 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 					clientLoggingWindow.writeLogger(">>LOG LINESIZE - " + value);
 				} else if (NetworkProtocolConstant.CLIENT_LOG_DATE.equals(protocol)) {
 					clientLoggingWindow.writeLogger(value);
+				} else if (NetworkProtocolConstant.SERVER_ERROR_MESSAGE.equals(protocol)) {
+					clientLoggingWindow.writeLogger("WARRING>> " + value);
 				}
 			} else {
 				JSONObject resObject = (JSONObject)msg;
@@ -59,6 +67,22 @@ public class LogViewerTcpClientHandler extends SimpleChannelInboundHandler<Objec
 					}
 					sb.append("============================================================================").append("\n");
 					clientLoggingWindow.writeLogger(sb.toString());
+				} else if (NetworkProtocolConstant.CLIENT_LOG_FILE_DOWN.equals(protocol)) {
+					File orgFile = (File) resObject.get("VALUE");
+					JFileChooser jFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+					jFileChooser.setDialogTitle("로그파일 저장");
+					jFileChooser.setFileFilter(new FileNameExtensionFilter("로그파일","log"));
+					jFileChooser.setSelectedFile(new File(orgFile.getName()));
+					String filePath = "";
+					int openOption = jFileChooser.showOpenDialog(jFileChooser);
+					
+					if (openOption == JFileChooser.APPROVE_OPTION) {
+						filePath = jFileChooser.getSelectedFile().getPath();
+					} else if (openOption == JFileChooser.CANCEL_OPTION) {
+						return;
+					}
+					
+					FileUtils.FileCopy(orgFile, filePath);
 				}
 			}
 		} catch (Exception e) {

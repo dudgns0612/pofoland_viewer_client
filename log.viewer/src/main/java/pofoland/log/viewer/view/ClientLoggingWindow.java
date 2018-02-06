@@ -17,9 +17,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import io.netty.channel.ChannelHandlerContext;
 import pofoland.log.viewer.client.LogViewerTcpClientHandler;
+import pofoland.log.viewer.utils.LoggerManager;
 
 public class ClientLoggingWindow {
 	private ChannelHandlerContext ctx  = null;
@@ -81,6 +83,11 @@ public class ClientLoggingWindow {
 		windowFrame.setVisible(true);
 		windowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (Exception e) {
+			LoggerManager.error(getClass(), "Look And Feel 오류 미 실행");
+		}
 		
 		//GUI인스턴스 추가
 		guiInstanceMap.put("logArea", logArea);

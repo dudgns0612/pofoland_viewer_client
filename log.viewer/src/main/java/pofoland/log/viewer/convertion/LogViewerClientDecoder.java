@@ -44,7 +44,6 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				return;
 			} 
 			
-			
 			if (type.equals("0x00")) {
 				String reciveMsg = "";
 				//사이즈 오버 시 남은 인덱스 사이즈 저장
@@ -83,7 +82,6 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				System.arraycopy(read, 2, packetDataSize, 0, 4);
 				int dataSize = ByteUtils.byteToIntBigEndian(packetDataSize);
 				
-				
 				byte[] packetMessageData = new byte[dataSize];
 				System.arraycopy(read,6, packetMessageData, 0, read.length-6);
 				System.arraycopy(packetMessageData, 0, packetMessageData, 0, packetMessageData.length-1);
@@ -93,14 +91,13 @@ public class LogViewerClientDecoder extends ByteToMessageDecoder {
 				
 				Object returnObject = objectInputStream.readObject();
 				out.add(returnObject);
-				
+
 				byteArrayInputStream.close();
 				objectInputStream.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerManager.debug(getClass(), "LogViewerClientDecoder : " + e.getMessage());
-		} finally {
 		}
 	}
 

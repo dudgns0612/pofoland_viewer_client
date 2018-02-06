@@ -118,23 +118,25 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 					}
 				}
 			} else if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE)) {
-				String dateOption = eventText.split(" ")[1];
-				Pattern pattern = Pattern.compile("[^0-9]");
-				Matcher matcher = pattern.matcher(dateOption);
 				
-				if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_FILE_DOWN, eventText)) {
-					// TODO
+				if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE_FILE_DOWN)) {
+					String date = eventText.split(" ")[2];
+					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_FILE_DOWN, "\\"+projectName+"."+date+".log");
 				} else {
-					if (matcher.matches()) {
-						if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, dateOption)) {
-							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
-						} else {
+					String dateOption = eventText.split(" ")[1];
+					Pattern pattern = Pattern.compile("^[0-9]*$");
+					Matcher matcher = pattern.matcher(dateOption);
+					
+					if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, eventText)) {
+						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
+					} else {
+						if (matcher.matches()) {
 							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, "\\"+projectName+"."+dateOption+".log");
 							logArea.setText("");
 							logArea.append(">>로그데이터 갱신중.... \n");
+						} else {
+							logArea.append(">>올바르지 않은 날짜형식입니다. \n");
 						}
-					} else {
-						logArea.append(">>올바르지 않은 날짜형식입니다. \n");
 					}
 				}
 				
