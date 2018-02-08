@@ -1,5 +1,8 @@
 package pofoland.log.viewer.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class StringUtils {
 	
 	/**
@@ -15,6 +18,18 @@ public class StringUtils {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 숫자만 포함 유무 검사
+	 * @param str
+	 * @return
+	 */
+	public static boolean numberMatcherInspect(String str) {
+		Pattern pattern = Pattern.compile("^[0-9]*$");
+		Matcher matcher = pattern.matcher(str);
+		
+		return matcher.matches();
 	}
 	
 	public static String makeSendStr (String protocol) {

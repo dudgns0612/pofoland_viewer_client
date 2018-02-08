@@ -24,7 +24,6 @@ public class KeyCodeRuleConstant {
 	public static final String LOG_DATE_DIR = "logdate dir";
 	public static final String LOG_DATE_FILE_DOWN = "logdate -d";
 	
-	
 	//LOG LEVEL
 //	public static final String LOG_LEVEL_ERROR = "ERROR";
 //	public static final String LOG_LEVEL_DEBUG = "DEBUG";

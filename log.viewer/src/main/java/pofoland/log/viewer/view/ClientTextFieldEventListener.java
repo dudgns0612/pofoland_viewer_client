@@ -5,8 +5,6 @@ import java.awt.event.KeyEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
@@ -118,19 +116,22 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 					}
 				}
 			} else if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE)) {
-				
 				if (StringUtils.toUpperCaseConstains(eventText, KeyCodeRuleConstant.LOG_DATE_FILE_DOWN)) {
 					String date = eventText.split(" ")[2];
-					LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_FILE_DOWN, "\\"+projectName+"."+date+".log");
+					if (StringUtils.numberMatcherInspect(date)) {
+						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_FILE_DOWN, "\\"+projectName+"."+date+".log");
+					} else if (date.equalsIgnoreCase("-t")){
+						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_FILE_DOWN, "\\"+projectName+".log");
+					} else {
+						logArea.append(">>올바르지 않은 날짜형식입니다. \n");
+					}
 				} else {
 					String dateOption = eventText.split(" ")[1];
-					Pattern pattern = Pattern.compile("^[0-9]*$");
-					Matcher matcher = pattern.matcher(dateOption);
-					
+
 					if (StringUtils.toUpperCaseConstains(KeyCodeRuleConstant.LOG_DATE_DIR, eventText)) {
 						LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DIR);
 					} else {
-						if (matcher.matches()) {
+						if (StringUtils.numberMatcherInspect(dateOption)) {
 							LogViewerTcpClientHandler.sendMessage(NetworkProtocolConstant.CLIENT_LOG_DATE, "\\"+projectName+"."+dateOption+".log");
 							logArea.setText("");
 							logArea.append(">>로그데이터 갱신중.... \n");
@@ -139,7 +140,6 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 						}
 					}
 				}
-				
 			} else if (KeyCodeRuleConstant.LOG_OPTION.equalsIgnoreCase(eventText)) {
 				StringBuffer sb = new StringBuffer();
 				sb.append("......................................LOG OPTION....................................").append("\n");
@@ -165,11 +165,11 @@ public class ClientTextFieldEventListener extends KeyAdapter{
 				logArea.append(">>존재하지 않는 명령어입니다. \n");
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
+			logArea.append(">>올바르지 않은 명령어입니다. \n");
 			LoggerManager.error(getClass(),"CONSOLE EVNET ERROR MESSAGE : {}", "ArrayIndexOutOfBoundsException : 인덱스 갯수 오류");
-			logArea.append(">>올바르지 않은 명령어입니다. \n");
 		} catch (NullPointerException e) {
-			LoggerManager.error(getClass(),"CONSOLE EVNET ERROR MESSAGE : {}", "NullPointerException : 데이터 NULL");
 			logArea.append(">>올바르지 않은 명령어입니다. \n");
+			LoggerManager.error(getClass(),"CONSOLE EVNET ERROR MESSAGE : {}", "NullPointerException : 데이터 NULL");
 		} catch (UnknownHostException e) {
 			logArea.append(">>사용이 불가능한 명령어입니다. \n");
 			LoggerManager.error(getClass(),"CONSOLE EVNET ERROR MESSAGE : {}", "UnknownHostException : 알 수 없는 호스트");
